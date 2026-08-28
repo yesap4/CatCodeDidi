@@ -6,3 +6,5 @@ PyAudio
 google-generativeai
 python-dotenv
 pyscreenshot
+Pillow
+rich
