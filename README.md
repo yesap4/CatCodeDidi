@@ -1,47 +1,100 @@
 # CatCodeDidi Voice Assistant
 
-CatCodeDidi is a beginner-friendly Hindi-speaking desktop voice assistant. This project intentionally grows in small, understandable phases instead of jumping directly to AI.
+CatCodeDidi is a beginner-friendly Hindi-speaking desktop voice assistant. This
+project intentionally grows in small, understandable phases.
+
+Since Phase 2 it runs as a **Tkinter desktop app**: press the microphone button,
+speak a command, and watch the assistant's state, the recognized command, her
+response, and the actions she takes.
 
 ## Installation
 
-Use Python 3.10 or newer, then install the project dependencies from this folder:
+Use Python 3.10 or newer, then install the dependencies from this folder:
 
-```powershell
+```bash
 pip install -r requirements.txt
+```
+
+The GUI uses **Tkinter**, which ships with the Python standard library on most
+desktop installations. If `import tkinter` fails, install your platform's Tk
+package (for example `brew install python-tk` on macOS, or
+`sudo apt install python3-tk` on Debian/Ubuntu).
+
+Optional: for AI answers, create a `.env` file with your Gemini key:
+
+```
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-2.5-flash   # optional override
 ```
 
 ## Run
 
-```powershell
+```bash
 python main.py
 ```
 
-Speak one of these commands:
+The CatCodeDidi window opens and greets you. Click **🎤 Speak** and say one of:
 
 - `open Google Chrome`
 - `close Google Chrome`
+- `take a screenshot`
 - `who is your father`
-- `shutdown`
+- `shutdown` (also `bye`, `good night`, …)
+
+Anything else is sent to Gemini and the answer is shown and spoken.
+
+## How a voice interaction works
+
+```
+press 🎤  ->  Listening...  ->  Processing...  ->  Speaking...  ->  Ready
+                   |                  |                 |
+              speech.py          router.py          speech.py
+            recognize_once()   route(text)         bot_speak()
+```
+
+Each step updates the **Status** pill. The recognized command and the reply
+appear in the **Conversation** area; opened/closed apps, screenshots, AI
+requests and errors appear in the **Activity log**. Recognition or Gemini
+failures are shown in the GUI and never crash the window.
 
 ## Architecture
 
-The project deliberately uses a flat root layout:
+```
+main.py  ->  gui.py  ->  assistant.py  ->  router.py ─┬─ commands.py
+          (Tkinter,       (interaction     (routing)  ├─ gemini_ai.py
+           threads)        orchestration)             ├─ personality.py
+                                                      └─ data.py
+```
 
-- `main.py`: starts the assistant, listens, and routes commands.
-- `speech.py`: microphone input, speech recognition, Hindi text-to-speech, and audio playback.
-- `commands.py`: application open/close commands and creator-query detection.
-- `personality.py`: time-based greeting and personality responses.
-- `config.py`: configuration constants.
-- `data.py`: static command data.
-- `utils.py`: reserved generic helpers for later phases.
+- `main.py`: entry point; launches the GUI.
+- `gui.py`: Tkinter presentation layer. Runs each interaction on a background
+  thread and receives progress events through a thread-safe queue drained on
+  the Tk main loop, so the window never freezes while listening, recognizing,
+  calling Gemini, or speaking.
+- `assistant.py`: `Assistant` class — the "brain". Runs one
+  listen → route → respond → speak cycle and reports every step via an `emit`
+  callback. Contains no GUI code.
+- `router.py`: turns recognized text into a response plus activity-log lines by
+  calling the existing command handlers or Gemini.
+- `speech.py`: microphone input, Google speech recognition (`recognize_once`),
+  Hindi text-to-speech (`bot_speak`), audio playback, speech text cleanup.
+- `commands.py`: cross-platform open/close application, screenshot, creator-query
+  detection. Each handler returns a `CommandResult` (no UI, no speech).
+- `personality.py`: time-based greeting text.
+- `gemini_ai.py`: Gemini integration; client is configured lazily and honours
+  `GEMINI_API_KEY` / `GEMINI_MODEL`.
+- `config.py`: `BOT_NAME`, `LANGUAGE`.
+- `data.py`: static command / creator-query data.
+- `utils.py`: reserved for later phases.
 
-For Phase 1, modules use straightforward same-folder imports and the assistant is launched with `python main.py`. Generated speech is written to a unique temporary MP3 file and deleted after playback.
-
-The current architecture contains no AI, search, browser, or automation modules beyond opening and closing local applications.
+The console flow is still available as library functions (`speech.voice_input`,
+`personality.greet_user`) but `python main.py` now opens the GUI.
 
 ## Roadmap
 
-1. **Phase 1 — Refactor and make robust:** preserve the original assistant while learning modules, imports, project structure, and separation of concerns.
-2. **Phase 2 — Assistant maxxing without AI:** add search, extraction, parsing, and information retrieval.
-3. **Phase 3 — AI:** add a modular AI provider only after the non-AI fundamentals are understood.
-4. **Phase 4 — Search plus AI:** combine retrieval, summarisation, and carefully scoped automation.
+1. **Phase 1 — Refactor and make robust.** ✅
+2. **Phase 2 — Desktop GUI.** ✅ Tkinter window with status, microphone button,
+   conversation view, and activity log; blocking work moved to background
+   threads.
+3. **Phase 3 — AI:** deepen the modular AI provider.
+4. **Phase 4 — Search plus AI:** retrieval, summarisation, and scoped automation.

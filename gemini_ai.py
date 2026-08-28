@@ -1,9 +1,9 @@
 import os
+
 import google.generativeai as genai
 from dotenv import load_dotenv
-load_dotenv()
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+load_dotenv()
 
 SYSTEM_INSTRUCTION = """
 You are a helpful assistant.
@@ -30,18 +30,31 @@ generation_config = {
     "response_mime_type": "text/plain",
 }
 
-model = genai.GenerativeModel(
-    model_name="gemini-3-flash-preview",
-    generation_config=generation_config,
-    system_instruction=SYSTEM_INSTRUCTION,
-)
+MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
-chat_session = model.start_chat(
-    history=[
-    ]
-)
+_chat_session = None
+
+
+def _get_chat_session():
+    """Lazily configure the client and start a chat session."""
+    global _chat_session
+    if _chat_session is None:
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "GEMINI_API_KEY is not set. Create a .env file with GEMINI_API_KEY=<your key>."
+            )
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(
+            model_name=MODEL_NAME,
+            generation_config=generation_config,
+            system_instruction=SYSTEM_INSTRUCTION,
+        )
+        _chat_session = model.start_chat(history=[])
+    return _chat_session
+
 
 def ask_gemini(user_input):
     # Send a message to Gemini and return the response text
-    response = chat_session.send_message(user_input)
+    response = _get_chat_session().send_message(user_input)
     return response.text

@@ -6,3 +6,6 @@ PyAudio
 google-generativeai
 python-dotenv
 pyscreenshot
+Pillow
+
+# The GUI uses Tkinter, which ships with the Python standard library.
