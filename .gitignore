@@ -1,3 +1,7 @@
+# Runtime screenshots produced by the assistant
+screenshot_*.png
+screenshots/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

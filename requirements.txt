@@ -1,10 +1,20 @@
-AppOpener
-gTTS
-playsound3
-SpeechRecognition
-PyAudio
-google-generativeai
-python-dotenv
+# CatCodeDidi Python dependencies (core services).
+
+# Speech input
+SpeechRecognition        # microphone capture + Google Web Speech API
+PyAudio                  # PortAudio bindings; needs PortAudio installed (see README)
+
+# Speech output
+gTTS                     # Google text-to-speech (online)
+playsound3               # cross-platform audio playback
+
+# AI
+google-genai             # official Gemini SDK (client-based google.genai API)
+python-dotenv            # reads GEMINI_API_KEY / GEMINI_MODEL from .env
+
+# Screenshots
 pyscreenshot
-Pillow
-rich
+Pillow                   # image backend used by pyscreenshot
+
+# Opening/closing apps on Windows (unused on macOS/Linux)
+AppOpener; sys_platform == "win32"
