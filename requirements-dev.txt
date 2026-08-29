@@ -1,0 +1,5 @@
+# Extra packages for running the tests:
+#   pip install -r requirements-dev.txt
+#   pytest
+-r requirements.txt
+pytest

@@ -1,0 +1,11 @@
+# Optional: hands-free wake word ("Cat Code Didi" / "Didi" / "Cat Code").
+#
+#   pip install -r requirements-wake.txt
+#
+# Kept out of requirements.txt on purpose - it is ~40 MB of wheels plus a
+# ~40 MB speech model downloaded to ~/.cache/vosk the first time you switch
+# the feature on. Without it CatCodeDidi runs exactly as before and the
+# "Wake word" switch is simply disabled.
+#
+# Everything runs locally: no audio is ever uploaded for wake detection.
+vosk                     # Apache-2.0 offline speech recognition

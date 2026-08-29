@@ -1,0 +1,1 @@
+"""Generic helpers reserved for future phases."""
