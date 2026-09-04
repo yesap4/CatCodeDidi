@@ -31,7 +31,7 @@ import personality
 import speech
 import wakeword
 from config import BOT_NAME
-from data import exit_commands
+from data import exit_commands,increase_volume_commands,decrease_volume_commands
 
 
 def handle_user_input(user_input):
@@ -69,7 +69,10 @@ def handle_user_input(user_input):
     elif first_word == "unmute":
         speech.set_muted(False)
         return "Maalik, ab mai phir se bol sakti hu!"
-
+    elif user_input.strip().lower() in increase_volume_commands:
+        commands.Increase_volume()
+    elif user_input.strip().lower() in decrease_volume_commands:
+        commands.Decrease_volume()
     # We did not recognise the command, so let the AI answer it.
     else:
         return gemini_ai.ask_gemini(user_input)

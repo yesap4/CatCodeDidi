@@ -19,3 +19,20 @@ exit_commands = [
         "bye-bye",
         "good bye good bye"
     ]
+
+increase_volume_commands = [
+    "volume badhao",
+    "increase volume",
+    "volume",
+    "sound badhao",
+    "sound jyada karo",
+    "sound tez karo"
+]
+
+
+decrease_volume_commands = [
+    "volume kam karo",
+    "decrease volume",
+    "sound kam karo",
+    "sound dhire karo"
+]

@@ -12,6 +12,7 @@ import glob
 import os
 import platform
 import shutil
+import pyautogui
 import subprocess
 
 import pyscreenshot
@@ -142,3 +143,10 @@ def take_screenshot():
 def is_creator_question(user_input):
     """Return True if the user asked who made CatCodeDidi."""
     return user_input.strip().lower() in FATHER_RELATED_QUESTIONS
+
+
+def Increase_volume():
+    pyautogui.press("volumeup")
+
+def Decrease_volume():
+    pyautogui.press("volumedown")
