@@ -2,7 +2,7 @@
 
 We use three libraries here:
   - speech_recognition : records the microphone and turns speech into text
-  - gTTS               : turns text into an MP3 file (Google Text-to-Speech)
+    - sarvamai           : turns text into speech audio
   - playsound3         : plays that MP3 file
 """
 
@@ -13,7 +13,6 @@ import tempfile
 
 import playsound3
 import speech_recognition as sr
-from gtts import gTTS
 from sarvamai import SarvamAI
 from sarvamai.play import save
 from config import LANGUAGE
@@ -56,9 +55,9 @@ def speak(text):
     if muted or not text.strip():
         return
 
-    # gTTS needs a real file to write to, so we make a temporary one.
-    # We close it first because Windows will not let two programs write
-    # to the same open file.
+    # Sarvam saves the generated audio to a temporary MP3 file for playback.
+    # Close it first because Windows will not let another program write to
+    # an open file.
     temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
     mp3_path = temp_file.name
     temp_file.close()
