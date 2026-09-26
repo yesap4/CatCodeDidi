@@ -14,9 +14,12 @@ import tempfile
 import playsound3
 import speech_recognition as sr
 from gtts import gTTS
-
+from sarvamai import SarvamAI
+from sarvamai.play import save
 from config import LANGUAGE
+from dotenv import load_dotenv
 
+load_dotenv()
 # Stop listening after 8 seconds of silence, and never record a single
 # sentence for longer than 15 seconds.
 LISTEN_TIMEOUT = 8
@@ -43,6 +46,12 @@ def clean_for_speech(text):
 
 
 def speak(text):
+
+    SarvamTTS = SarvamAI(
+        api_subscription_key= os.environ.get("SARVAM_TTS_KEY")
+    )
+
+
     """Say the text out loud in Hindi."""
     if muted or not text.strip():
         return
@@ -55,7 +64,16 @@ def speak(text):
     temp_file.close()
 
     try:
-        gTTS(text=text, lang=LANGUAGE).save(mp3_path)
+        TTS_response = SarvamTTS.text_to_speech.convert(
+            text=text,
+            language_code="hi-IN",
+            speaker="shreya",
+            model="bulbul:v3",
+            pace=0.9,
+            speech_sample_rate=22050,
+            output_audio_codec="mp3",
+        )
+        save(TTS_response, mp3_path)
         playsound3.playsound(mp3_path)
     except Exception as error:
         print(f"Could not speak: {error}")
