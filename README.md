@@ -16,6 +16,7 @@ no classes, and the whole program flow fits on one screen.
 | `open Google Chrome` | opens the app |
 | `close Google Chrome` | closes the app |
 | `take a screenshot` | saves a picture of your screen |
+| `dictate` / `jo mai bolu likho` | types the next spoken phrase into the focused app |
 | `who is your father` | she tells you who made her |
 | `mute` / `unmute` | turns her voice off and on |
 | `shutdown`, `bye`, `good night` | quits |

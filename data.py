@@ -30,6 +30,17 @@ increase_volume_commands = [
 ]
 
 
+greeting_commands = [
+    "hi",
+    "hello",
+    "kaisi ho",
+    "kya haal chal",
+    "hey",
+    "whats up",
+    "what's up"
+]
+
+
 decrease_volume_commands = [
     "volume kam karo",
     "decrease volume",
@@ -196,4 +207,38 @@ scoll_to_end_commands = [
     'last me jao',
     'sabse niche jao',
     'sabse neeche jao'
+]
+
+development_mode_commands = [
+    "development mode start karo",
+    "development mode shuru karo",
+    "development karna hai",
+    "mujhe development karna hai"
+]
+
+study_mode_commands = [
+    "study mode start karo",
+    "study mode shuru karo",
+    "study karna hai",
+    "padhai karna hai"
+]
+
+chill_mode_commands = [
+    "chill mode start karo",
+    "chill mode shuru karo",
+    "chill karna hai", 
+    'chill karte hai'
+]
+
+dicate_commands = [
+    "dictate",
+    "start dictation",
+    "start dictation mode",
+    "begin dictation",
+    "type what i say",
+    "likhna shuru karo",
+    "jo mai bolu likho",
+    "meri baat likho",
+    "dictation shuru karo",
+    "bolkar likho",
 ]

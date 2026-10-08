@@ -14,7 +14,7 @@ import platform
 import shutil
 import pyautogui
 import subprocess
-
+import speech
 import pyscreenshot
 
 from data import FATHER_RELATED_QUESTIONS
@@ -34,7 +34,8 @@ def find_mac_app(app_name):
     The user says "Chrome" but the app is really called "Google Chrome",
     so we look through the Applications folders for a close match.
     """
-    folders = ["/Applications", "/Applications/Utilities", "/System/Applications"]
+    folders = ["/Applications",
+               "/Applications/Utilities", "/System/Applications"]
     wanted = app_name.lower()
 
     for folder in folders:
@@ -61,7 +62,8 @@ def open_application(app_name):
     try:
         if SYSTEM == "Darwin":
             real_name = find_mac_app(app_name) or app_name
-            subprocess.run(["open", "-a", real_name], check=True, capture_output=True)
+            subprocess.run(["open", "-a", real_name],
+                           check=True, capture_output=True)
 
         elif SYSTEM == "Windows":
             from AppOpener import open as open_windows_app
@@ -120,7 +122,8 @@ def take_screenshot():
         os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        screenshot_path = os.path.join(SCREENSHOT_FOLDER, f"screenshot_{timestamp}.png")
+        screenshot_path = os.path.join(
+            SCREENSHOT_FOLDER, f"screenshot_{timestamp}.png")
 
         image = pyscreenshot.grab()
 
@@ -148,21 +151,29 @@ def is_creator_question(user_input):
 def Increase_volume():
     pyautogui.press("volumeup")
 
+
 def Decrease_volume():
     pyautogui.press("volumedown")
 
+
+def greet_user_back():
+    print("Mai Badhiya Hu Maalik, Aap Kaise Hai?")
+    speech.speak("Mai Badhiya Hu Maalik, Aap Kaise Hai?")
 
 def scroll_up():
     # Scroll up by pressing the Up arrow key five times
     pyautogui.press('up', presses=5)
 
+
 def scroll_down():
     # Scroll down by pressing the Down arrow key five times
     pyautogui.press('down', presses=5)
 
+
 def scroll_to_top():
     # Scroll to the top of the page
     pyautogui.hotkey('home')
+
 
 def scroll_to_bottom():
     # Scroll to the bottom of the page
@@ -172,44 +183,140 @@ def scroll_to_bottom():
 def open_new_tab():
     pyautogui.hotkey('ctrl', 't')
 
+
 def close_tab():
     pyautogui.hotkey('ctrl', 'w')
+
 
 def open_browser_menu():
     pyautogui.hotkey('alt', 'f')
 
+
 def zoom_in():
     pyautogui.hotkey('ctrl', '+')
+
 
 def zoom_out():
     pyautogui.hotkey('ctrl', '-')
 
+
 def refresh_page():
     pyautogui.hotkey('ctrl', 'r')
+
 
 def switch_to_next_tab():
     pyautogui.hotkey('ctrl', 'tab')
 
+
 def switch_to_previous_tab():
     pyautogui.hotkey('ctrl', 'shift', 'tab')
+
 
 def open_history():
     pyautogui.hotkey('ctrl', 'h')
 
+
 def open_bookmarks():
     pyautogui.hotkey('ctrl', 'b')
+
 
 def go_back():
     pyautogui.hotkey('alt', 'left')
 
+
 def go_forward():
     pyautogui.hotkey('alt', 'right')
+
 
 def open_dev_tools():
     pyautogui.hotkey('ctrl', 'shift', 'i')
 
+
 def toggle_full_screen():
     pyautogui.hotkey('f11')
 
+
 def open_private_window():
     pyautogui.hotkey('ctrl', 'shift', 'n')
+
+
+def dictate_text():
+    """Listen for one utterance and type it into the focused application."""
+    print("Listening for dictation...")
+    dictated_text = speech.listen_to_user()
+
+    if not dictated_text:
+        return "I could not understand the dictation, Maalik."
+
+    pyautogui.write(dictated_text, interval=0.02)
+    return "Dictation typed, Maalik."
+
+# Full app name -> different ways it can be recognized from speech
+APP_ALIASES = {
+    "Visual Studio Code": ["vs code", "vscode", "vs-code", "v s code", "visual studio code"],
+}
+
+
+def normalize_app_name(name):
+    # Lowercase and remove extra spaces before comparing
+    cleaned = name.strip().lower()
+
+    # Check every app and every alias it has
+    for full_name in APP_ALIASES:
+        for possible_name in APP_ALIASES[full_name]:
+            if cleaned == possible_name:
+                return full_name
+
+    # Otherwise keep the name as it is
+    return name.strip()
+
+
+def ask_for_apps():
+    # Ask the user which apps to open and return a clean list
+    speech.speak("Maalik, Mujhe Bataiye kon kon se app open karne hai?")
+    app_names = speech.listen_to_user()
+
+    # Use "aur" and "and" as separators, so "VS Code" stays in one piece
+    app_names = app_names.replace(" aur ", ",")
+    app_names = app_names.replace(" and ", ",")
+
+    app_list = []
+    parts = app_names.split(",")
+    for part in parts:
+        if part.strip() != "":
+            fixed_name = normalize_app_name(part)
+            app_list.append(fixed_name)
+
+    return app_list
+
+
+def open_mode_apps(saved_apps):
+    # Ask only if this mode has no saved apps yet
+    if saved_apps == []:
+        saved_apps = ask_for_apps()
+
+    for app_name in saved_apps:
+        open_application(app_name)
+
+    # Return the list so the mode can remember it
+    return saved_apps
+
+
+development_apps = []
+study_apps = []
+chill_apps = []
+
+
+def start_development_mode():
+    global development_apps
+    development_apps = open_mode_apps(development_apps)
+
+
+def start_study_mode():
+    global study_apps
+    study_apps = open_mode_apps(study_apps)
+
+
+def start_chill_mode():
+    global chill_apps
+    chill_apps = open_mode_apps(chill_apps)
